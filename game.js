@@ -64,11 +64,11 @@ const achievements = [
 ];
 
 const artifactsPool = [
-  { name: "Prismatic Lens", bonus: () => (state.modifiers.insightGain += 0.18) },
-  { name: "Entropy Core", bonus: () => (state.modifiers.combatPower += 0.22) },
-  { name: "Mirage Contract", bonus: () => (state.modifiers.creditsGain += 0.2) },
-  { name: "Harmonic Battery", bonus: () => (state.modifiers.energyRegen += 0.4) },
-  { name: "Oracle Fragment", bonus: () => (state.modifiers.shardLuck += 0.25) }
+  { name: "Prismatic Lens", desc: "+18% insight gain", bonus: () => (state.modifiers.insightGain += 0.18) },
+  { name: "Entropy Core", desc: "+22% combat power", bonus: () => (state.modifiers.combatPower += 0.22) },
+  { name: "Mirage Contract", desc: "+20% credits gain", bonus: () => (state.modifiers.creditsGain += 0.2) },
+  { name: "Harmonic Battery", desc: "+0.4 energy regen/sec", bonus: () => (state.modifiers.energyRegen += 0.4) },
+  { name: "Oracle Fragment", desc: "+25% shard find luck", bonus: () => (state.modifiers.shardLuck += 0.25) }
 ];
 
 let questCompleteCount = 0;
@@ -208,10 +208,10 @@ function tickChallenge() {
 
 function generateQuest() {
   const templates = [
-    { t: "Accumulate insight", field: "insight", base: 180 },
-    { t: "Earn credits", field: "credits", base: 220 },
-    { t: "Collect shards", field: "shards", base: 4 },
-    { t: "Gain XP", field: "xp", base: 120 }
+    { t: "Accumulate insight", field: "insight", base: 180, hint: "Gain insight from actions, passives, and rewards." },
+    { t: "Earn credits", field: "credits", base: 220, hint: "Build credits through scouting, combat wins, and market work." },
+    { t: "Collect shards", field: "shards", base: 4, hint: "Find shards from successful actions or trade for them at Black Market." },
+    { t: "Gain XP", field: "xp", base: 120, hint: "Any action can add XP. Harder zones and risky runs grant more." }
   ];
   const q = templates[Math.floor(Math.random() * templates.length)];
   const scale = 1 + state.level * 0.4;
@@ -220,6 +220,7 @@ function generateQuest() {
   state.quests.push({
     id: crypto.randomUUID(),
     title: q.t,
+    hint: q.hint,
     field: q.field,
     start,
     target,
@@ -282,6 +283,16 @@ function recomputeModifiers() {
   state.modifiers.insightGain += state.artifacts.filter((a) => a.name === "Prismatic Lens").length * 0.18;
   state.modifiers.creditsGain += state.artifacts.filter((a) => a.name === "Mirage Contract").length * 0.2;
   state.modifiers.combatPower += state.artifacts.filter((a) => a.name === "Entropy Core").length * 0.22;
+}
+
+function upgradeImpactText(id, lvl) {
+  const nextLevel = lvl + 1;
+  if (id === "drone") return `Passive insight: ${num(lvl * 1.2)} → ${num(nextLevel * 1.2)} / sec`;
+  if (id === "reactor") return `Energy regen: +${num(lvl * 0.7)} → +${num(nextLevel * 0.7)} / sec`;
+  if (id === "decoder") return `Action insight bonus: +${Math.round(lvl * 15)}% → +${Math.round(nextLevel * 15)}%`;
+  if (id === "broker") return `Credit gain bonus: +${Math.round(lvl * 20)}% → +${Math.round(nextLevel * 20)}%`;
+  if (id === "chrono") return `Threat growth reduction: -${Math.round(lvl * 5)}% → -${Math.round(nextLevel * 5)}%`;
+  return "";
 }
 
 function runPassive() {
@@ -375,7 +386,7 @@ function render() {
     const cost = Math.floor(u.base * Math.pow(u.scale, lvl));
     const div = document.createElement("div");
     div.className = "card";
-    div.innerHTML = `<div class="title"><span>${u.name}</span><span>Lv ${lvl}</span></div><p>${u.desc}</p><p>Cost: ${cost} credits</p>`;
+    div.innerHTML = `<div class="title"><span>${u.name}</span><span>Lv ${lvl}</span></div><p>${u.desc}</p><p>${upgradeImpactText(u.id, lvl)}</p><p>Cost: ${cost} credits</p>`;
     const b = document.createElement("button");
     b.textContent = "Upgrade";
     b.disabled = state.credits < cost;
@@ -385,8 +396,15 @@ function render() {
   });
 
   artifactList.innerHTML = state.artifacts.length
-    ? state.artifacts.map((a) => `<div class="card"><div class="title"><span>${a.name}</span><span>∞</span></div></div>`).join("")
+    ? state.artifacts.map((a) => {
+      const details = artifactsPool.find((poolItem) => poolItem.name === a.name);
+      return `<div class="card"><div class="title"><span>${a.name}</span><span>∞</span></div><p>${details?.desc || "Permanent bonus"}</p></div>`;
+    }).join("")
     : '<div class="card"><p>No artifacts yet. Synthesize to unlock permanent powers.</p></div>';
+
+  artifactList.innerHTML += `<div class="card"><div class="title"><span>Possible Synthesis Outcomes</span><span>Preview</span></div>${artifactsPool
+    .map((a) => `<p><b>${a.name}:</b> ${a.desc}</p>`)
+    .join("")}</div>`;
 
   achievementList.innerHTML = achievements
     .map((a) => `<div class="card"><div class="title"><span>${a.text}</span><span>${state.achievements[a.id] ? "🏆" : "..."}</span></div></div>`)
@@ -396,6 +414,7 @@ function render() {
     ? state.quests.map((q) => {
         const prog = Math.max(0, state[q.field] - q.start);
         return `<div class="card"><div class="title"><span>${q.title}</span><span>${q.done ? "✔" : `${num(prog)}/${q.target}`}</span></div>
+        <p>${q.hint}</p>
         <p>Reward: ${q.rewardC} credits, ${q.rewardI} insight, 1 shard</p></div>`;
       }).join("")
     : '<div class="card"><p>No quests active. Roll one!</p></div>';
