@@ -99,6 +99,29 @@ button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 }
 .card .title { display: flex; justify-content: space-between; font-weight: 700; }
 .card p { margin: 0.35rem 0 0; color: var(--subtle); font-size: 0.92rem; }
+
+.guide {
+  margin-bottom: 1rem;
+}
+.guide p {
+  margin: 0;
+}
+.guide details {
+  margin-top: 0.55rem;
+}
+.guide summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 700;
+}
+.guide ol, .guide ul {
+  margin: 0.45rem 0 0;
+  padding-left: 1.2rem;
+}
+.guide li {
+  margin: 0.25rem 0;
+  color: var(--subtle);
+}
 .tag { color: var(--ok); font-weight: 700; }
 
 .feed {
