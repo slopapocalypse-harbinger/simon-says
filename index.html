@@ -3,92 +3,134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simon Says: Mindbreaker Odyssey</title>
+  <title>Simon Says: Wanderer's Chronicle</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div id="app">
-    <header class="topbar glass">
-      <div>
-        <h1>Simon Says: <span>Mindbreaker Odyssey</span></h1>
-        <p class="subtitle">A deep tactical idle-adventure designed to melt your brain (in a good way).</p>
+    <header class="topbar shell">
+      <div class="brand">
+        <p class="eyebrow">Guided incremental expedition</p>
+        <h1>Simon Says: <span>Wanderer's Chronicle</span></h1>
+        <p class="subtitle">
+          You do not steer Simon step by step. You set the tone, shape the camp, and watch him
+          turn your guidance into a long strange journey.
+        </p>
       </div>
       <div class="resource-grid" id="resourceGrid"></div>
     </header>
 
     <main class="layout">
-      <section class="panel glass">
-        <h2>Mission Briefing</h2>
-        <div class="guide card">
-          <p><b>Primary Objective:</b> Grow your operation by leveling up, unlocking every zone, forging artifacts, and surviving rising threat.</p>
-          <details open>
-            <summary>Quick start (first 5 minutes)</summary>
-            <ol>
-              <li>Use <b>Scout</b> to build early Insight + Credits with low risk.</li>
-              <li>Roll 1–2 quests, then play toward their targets for bonus rewards.</li>
-              <li>Buy <b>Autonomous Drone</b> and <b>Fusion Reactor</b> early to improve passive income and energy recovery.</li>
-              <li>When your Energy is healthy, use <b>Breach Node</b> or <b>Deep Expedition</b> for bigger payouts and XP.</li>
-              <li>Spend shards on <b>Synthesize Artifact</b> for permanent boosts that scale your whole run.</li>
-            </ol>
-          </details>
-          <details>
-            <summary>What each section does</summary>
-            <ul>
-              <li><b>Operations:</b> Your active buttons. Each action costs energy and pushes your run forward.</li>
-              <li><b>Zones:</b> Harder zones unlock by level. They increase rewards, but danger and losses also scale up.</li>
-              <li><b>Active Challenge:</b> Timed events that appear randomly. Completing them gives big bonus rewards.</li>
-              <li><b>Mission Feed:</b> Live log of successes, failures, and system messages.</li>
-              <li><b>Quest Board:</b> Optional objectives. Completing quests grants credits, insight, and shards.</li>
-              <li><b>Upgrades:</b> Persistent run boosts bought with credits.</li>
-              <li><b>Artifacts:</b> Permanent power spikes crafted from shards.</li>
-              <li><b>Achievements:</b> Milestones with bonus resources; useful long-term goals.</li>
-            </ul>
-          </details>
-          <details>
-            <summary>Resource tips</summary>
-            <ul>
-              <li><b>Energy</b> is your action fuel. Keep some in reserve for challenges.</li>
-              <li><b>Threat</b> rises as you act. If it overflows, you take a major energy hit.</li>
-              <li><b>Insight + Credits</b> are your core economy. Balance spending on upgrades with shard generation.</li>
-              <li><b>Shards</b> are rare and best saved for artifact crafting once costs rise.</li>
-            </ul>
-          </details>
-        </div>
+      <section class="journey-column">
+        <article class="panel shell scene-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow" id="chapterLabel">Chapter 1</p>
+              <h2 id="regionTitle">Journey Window</h2>
+            </div>
+            <div class="scene-meta" id="sceneMeta"></div>
+          </div>
 
-        <h2>Operations</h2>
-        <div class="btn-grid" id="actionButtons"></div>
+          <div class="scene-window" id="sceneWindow"></div>
 
-        <h3>Zones</h3>
-        <div class="zone-list" id="zoneList"></div>
+          <div class="status-grid">
+            <div class="card meter-card">
+              <div class="title-row">
+                <span>Current Stride</span>
+                <span id="activityTimer">0s</span>
+              </div>
+              <h3 id="activityTitle">Waiting for the first suggestion</h3>
+              <p id="activityDesc">Queue a few gentle nudges and Simon will decide how to carry them out.</p>
+            </div>
 
-        <h3>Active Challenge</h3>
-        <div class="challenge-box" id="challengeBox"></div>
+            <div class="card meter-card">
+              <div class="title-row">
+                <span>Trail Progress</span>
+                <span id="trailText">0 / 0</span>
+              </div>
+              <div class="meter">
+                <div class="meter-fill trail-fill" id="trailFill"></div>
+              </div>
+              <p id="trailDesc">Each completed outing advances the current route and opens room for new scenes.</p>
+            </div>
+
+            <div class="card meter-card">
+              <div class="title-row">
+                <span>Journey Rhythm</span>
+                <span id="cadenceValue">0</span>
+              </div>
+              <div class="meter">
+                <div class="meter-fill cadence-fill" id="cadenceFill"></div>
+              </div>
+              <p id="cadenceText">Varied, well-timed guidance makes Simon more likely to find wonderful things.</p>
+            </div>
+          </div>
+
+          <div class="queue-shell card">
+            <div class="title-row">
+              <span>Simon Says Queue</span>
+              <span id="queueHint">0 / 0 slots filled</span>
+            </div>
+            <div class="queue-list" id="queueList"></div>
+            <div class="btn-grid" id="guidanceButtons"></div>
+          </div>
+        </article>
+
+        <article class="panel shell log-panel">
+          <div class="dual-stack">
+            <div class="card guide-card" id="chapterCard"></div>
+            <div class="card phenomenon-card" id="phenomenonBox"></div>
+          </div>
+
+          <div class="title-row">
+            <span>Expedition Feed</span>
+            <span>Newest first</span>
+          </div>
+          <div id="eventFeed" class="feed"></div>
+        </article>
       </section>
 
-      <section class="panel glass">
-        <h2>Mission Feed</h2>
-        <div id="eventFeed" class="feed"></div>
+      <aside class="sidebar">
+        <section class="panel shell">
+          <h2>Route Atlas</h2>
+          <div id="regionList" class="stack"></div>
+        </section>
 
-        <h3>Quest Board</h3>
-        <div id="questBoard" class="quest-board"></div>
-      </section>
+        <section class="panel shell">
+          <h2>Camp Projects</h2>
+          <div id="upgradeList" class="stack"></div>
+        </section>
 
-      <section class="panel glass">
-        <h2>Upgrades</h2>
-        <div id="upgradeList" class="upgrade-list"></div>
+        <section class="panel shell">
+          <h2>Findings Shelf</h2>
+          <div id="discoveryList" class="stack"></div>
 
-        <h3>Artifacts</h3>
-        <div id="artifactList" class="artifact-list"></div>
-
-        <h3>Achievements</h3>
-        <div id="achievementList" class="achievement-list"></div>
-      </section>
+          <h3>Milestones</h3>
+          <div id="milestoneList" class="stack compact"></div>
+        </section>
+      </aside>
     </main>
 
-    <footer class="glass footer">
-      <button id="saveBtn">Save</button>
-      <button id="loadBtn">Load</button>
-      <button id="hardResetBtn" class="danger">Hard Reset</button>
+    <section class="shell debug-panel" id="debugPanel" hidden>
+      <div class="title-row">
+        <span>Debug Journey Lab</span>
+        <span>Tune pacing without waiting in real time</span>
+      </div>
+      <div class="debug-actions">
+        <button id="debugQuick30">Fast-forward 30s</button>
+        <button id="debugQuick300">Fast-forward 5m</button>
+        <button id="debugAutoplay">Autoplay 20m</button>
+      </div>
+      <pre id="debugOutput" class="debug-output"></pre>
+    </section>
+
+    <footer class="footer shell">
+      <div class="footer-actions">
+        <button id="saveBtn">Save</button>
+        <button id="loadBtn">Load</button>
+        <button id="debugToggleBtn">Debug</button>
+        <button id="hardResetBtn" class="danger">Hard Reset</button>
+      </div>
       <span id="statusText"></span>
     </footer>
   </div>
